@@ -36,7 +36,37 @@ npm --prefix frontend run dev
 
 Abra **http://localhost:5173**. A documentação interativa da API fica em **http://127.0.0.1:8000/docs**.
 
-Para gerar respostas ao vivo, defina `ENTRE_MODE=live` e `ENTRE_API_KEY` no `.env` da raiz e reinicie o FastAPI. O adaptador OpenAI usa Chat Completions e solicita um esquema JSON estrito para o crítico. Para outro endpoint compatível, configure `ENTRE_API_BASE_URL` e modelos que aceitem esse formato. `ENTRE_CRITIC_MODEL` permite escolher um modelo diferente para o crítico. Variáveis de ambiente têm prioridade sobre o `.env`. As chaves dos provedores ficam no Python. [Referência de Chat Completions](https://developers.openai.com/api/reference/resources/chat).
+Para trocar de provedor, substitua a URL, a chave e o modelo no `.env` da raiz e reinicie o FastAPI. Se você definiu `ENTRE_CRITIC_MODEL`, atualize esse valor também ou deixe-o em branco para usar o modelo do personagem. Variáveis de ambiente têm prioridade sobre o `.env`. As chaves ficam no backend.
+
+### Usar a OpenAI
+
+```dotenv
+ENTRE_MODE=live
+ENTRE_API_BASE_URL=https://api.openai.com/v1
+ENTRE_API_KEY=your_openai_api_key
+ENTRE_CHARACTER_MODEL=gpt-4.1-mini
+ENTRE_CRITIC_MODEL=
+```
+
+[Criar chave da API da OpenAI](https://platform.openai.com/api-keys)
+
+### Usar o Google Gemini
+
+Use uma chave da API Gemini criada no Google AI Studio. Adicione estas configurações ao `.env` da raiz do projeto e reinicie o FastAPI.
+
+```dotenv
+ENTRE_MODE=live
+ENTRE_API_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+ENTRE_API_KEY=your_gemini_api_key
+ENTRE_CHARACTER_MODEL=gemini-3.8-flash
+ENTRE_CRITIC_MODEL=
+```
+
+Com `ENTRE_CRITIC_MODEL` em branco, o crítico usa o mesmo modelo do personagem. O Google documenta a saída estruturada nesse endpoint. [Chave da API Gemini](https://aistudio.google.com/apikey) · [Compatibilidade com OpenAI](https://aistudio.google.com/docs/openai)
+
+### Avatares opcionais
+
+As fotos dos personagens vêm do catálogo e são arquivos estáticos. Personagens sem foto aparecem com a inicial do nome. Nesta versão, os modelos configurados geram a conversa e o feedback de idiomas. A geração de avatares por IA é um recurso opcional do Entre original.
 
 ## Arquitetura
 

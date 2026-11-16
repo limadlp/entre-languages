@@ -36,7 +36,37 @@ npm --prefix frontend run dev
 
 Open **http://localhost:5173**. FastAPI serves its interactive API docs at **http://127.0.0.1:8000/docs**.
 
-For live responses, set `ENTRE_MODE=live` and `ENTRE_API_KEY` in the root `.env`, then restart FastAPI. The OpenAI adapter uses Chat Completions and asks for a strict JSON schema from the critic. To use another compatible endpoint, configure `ENTRE_API_BASE_URL` and models that support this request format. `ENTRE_CRITIC_MODEL` can override the critic's model. Environment variables take precedence over `.env`. Provider keys stay in Python. [Chat Completions reference](https://developers.openai.com/api/reference/resources/chat).
+To switch providers, replace the URL, API key, and model in the root `.env`, then restart FastAPI. If you set `ENTRE_CRITIC_MODEL`, update it as well or leave it blank to use the character model. Environment variables take precedence over `.env`. API keys stay on the backend.
+
+### Use OpenAI
+
+```dotenv
+ENTRE_MODE=live
+ENTRE_API_BASE_URL=https://api.openai.com/v1
+ENTRE_API_KEY=your_openai_api_key
+ENTRE_CHARACTER_MODEL=gpt-4.1-mini
+ENTRE_CRITIC_MODEL=
+```
+
+[Create an OpenAI API key](https://platform.openai.com/api-keys)
+
+### Use Google Gemini
+
+Use a Gemini API key from Google AI Studio. Set the following in the backend's root `.env` and restart FastAPI.
+
+```dotenv
+ENTRE_MODE=live
+ENTRE_API_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+ENTRE_API_KEY=your_gemini_api_key
+ENTRE_CHARACTER_MODEL=gemini-3.8-flash
+ENTRE_CRITIC_MODEL=
+```
+
+An empty `ENTRE_CRITIC_MODEL` uses the character model for feedback too. Google documents structured outputs on this endpoint. [Gemini API key](https://aistudio.google.com/apikey) · [OpenAI compatibility](https://aistudio.google.com/docs/openai)
+
+### Optional avatars
+
+Character portraits are static files provided by the catalog. Characters without a portrait display their initial. In this version, the configured models generate dialogue and language feedback. AI-generated avatars are an optional feature of the original Entre.
 
 ## Architecture
 
