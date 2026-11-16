@@ -2,7 +2,7 @@
 
 [Leia em português](README.pt-BR.md)
 
-Practice English, Brazilian Portuguese, or Spanish through chance encounters with fictional AI characters. Choose a language, meet someone with a shared interest, and send the first message. A language critic adds a short explanation and a more natural way to say what you wrote.
+Practice English, Brazilian Portuguese, Spanish, or Mandarin Chinese (Simplified) through chance encounters with fictional AI characters. Choose a language, meet someone with a shared interest, and send the first message. A language critic adds a short explanation and a more natural way to say what you wrote.
 
 **Author** · Dangeles Lima
 
@@ -10,7 +10,9 @@ Practice English, Brazilian Portuguese, or Spanish through chance encounters wit
 
 **Demo mode** needs no key. On the discovery screen, select a language and click **Try an example**. Send the prefilled message to see a scripted character reply and one sample critique. Each practice language has its own sample. Set the explanation language independently in **Settings**.
 
-![Discovery screen with a language selector, interest filters, and an example critique](docs/images/discovery.png)
+<img src="docs/images/discovery.png" width="960" alt="Discovery screen with language selection, interest filters, and an example critique" />
+
+<img src="docs/images/chat-pt-br.png" width="390" alt="Spanish chat with a Spanish rewrite and a Portuguese explanation" />
 
 ### Run locally
 
@@ -103,6 +105,7 @@ Backend tests cover the demo HTTP contract, early reply delivery, critique failu
 | `I'm kinda into old movies, tbh.` | Preserve casual register and accept natural slang. |
 | `fazem dois anos que eu moro aqui e eu gosto muito daqui` | Use singular “faz” for elapsed time and keep the original claim. |
 | `me gusta mucho las películas de terror` | Use “gustan”. With Portuguese selected for explanations, keep the rewrite in Spanish. |
+| `我昨天去商店买了一个裤子` | Use the measure word “条” for a pair of pants. Keep the rewrite in Mandarin. |
 
 ## Deploy
 

@@ -2,13 +2,15 @@
 
 [Read in English](README.md)
 
-Pratique inglês, português brasileiro ou espanhol em encontros aleatórios com personagens fictícios de IA. Escolha um idioma, encontre alguém com interesses em comum e mande a primeira mensagem. O crítico de idiomas acrescenta uma explicação curta e uma forma mais natural de dizer o que você escreveu.
+Pratique inglês, português brasileiro, espanhol ou mandarim (escrita simplificada) em encontros aleatórios com personagens fictícios de IA. Escolha um idioma, encontre alguém com interesses em comum e mande a primeira mensagem. O crítico de idiomas acrescenta uma explicação curta e uma forma mais natural de dizer o que você escreveu.
 
 **Autor** · Dangeles Lima
 
 ## Experimente
 
 O **modo demonstração** funciona sem chave. Na descoberta, escolha um idioma e clique em **Testar uma frase**. Envie o texto preenchido para ver uma resposta de exemplo e a crítica correspondente. Há uma frase para cada idioma de prática. Você pode escolher o idioma das explicações em **Configurações**.
+
+<img src="docs/images/discovery.png" width="960" alt="Tela de descoberta com seleção de idioma, filtros por interesse e um exemplo do crítico" />
 
 <img src="docs/images/chat-pt-br.png" width="390" alt="Chat em espanhol com reformulação em espanhol e explicação em português" />
 
@@ -103,6 +105,7 @@ Os testes do backend cobrem o contrato HTTP da demo, a entrega antecipada da res
 | `I'm kinda into old movies, tbh.` | Preserva o tom casual e aceita as gírias naturais. |
 | `fazem dois anos que eu moro aqui e eu gosto muito daqui` | Usa “faz” no singular para indicar tempo decorrido e mantém a afirmação original. |
 | `me gusta mucho las películas de terror` | Usa “gustan”. Se a explicação estiver em português, mantém a reformulação em espanhol. |
+| `我昨天去商店买了一个裤子` | Usa a palavra de medida “条” para contar calças e mantém a reformulação em mandarim. |
 
 ## Publicação
 
