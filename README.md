@@ -1,0 +1,116 @@
+# Entre Languages
+
+[Leia em português](README.pt-BR.md)
+
+Practice English, Brazilian Portuguese, or Spanish through chance encounters with fictional AI characters. Choose a language, meet someone with a shared interest, and send the first message. A language critic adds a short explanation and a more natural way to say what you wrote.
+
+**Author** · Dangeles Lima
+
+## Try it
+
+**Demo mode** needs no key. On the discovery screen, select a language and click **Try an example**. Send the prefilled message to see a scripted character reply and one sample critique. Each practice language has its own sample. Set the explanation language independently in **Settings**.
+
+![Discovery screen with a language selector, interest filters, and an example critique](docs/images/discovery.png)
+
+### Run locally
+
+Requirements · Python 3.11+, [uv](https://docs.astral.sh/uv/), and Node.js 22.12+ on Node 22 or Node 24.
+
+```sh
+uv sync --locked
+npm --prefix frontend ci
+cp .env.example .env
+```
+
+Start the API and Vite in separate terminals from the repo root.
+
+```sh
+uv run --locked uvicorn entre_languages.api:app --app-dir backend --reload
+```
+
+```sh
+npm --prefix frontend run dev
+```
+
+Open **http://localhost:5173**. FastAPI serves its interactive API docs at **http://127.0.0.1:8000/docs**.
+
+For live responses, set `ENTRE_MODE=live` and `ENTRE_API_KEY` in the root `.env`, then restart FastAPI. The OpenAI adapter uses Chat Completions and asks for a strict JSON schema from the critic. To use another compatible endpoint, configure `ENTRE_API_BASE_URL` and models that support this request format. `ENTRE_CRITIC_MODEL` can override the critic's model. Environment variables take precedence over `.env`. Provider keys stay in Python. [Chat Completions reference](https://developers.openai.com/api/reference/resources/chat).
+
+## Architecture
+
+```mermaid
+flowchart LR
+    browser["React + Vite"] -->|"POST /api/turns"| api["FastAPI"]
+    browser <-->|"Conversations and contacts"| storage["Browser local storage"]
+    api -->|"Validated turn and persona"| orchestration["Python turn orchestrator"]
+    orchestration --> character["Character agent"]
+    orchestration -->|"If feedback is enabled"| critic["Language critic"]
+    character --> adapter["Demo or OpenAI-compatible adapter"]
+    critic --> adapter
+    adapter -->|"Live mode"| model["Chat Completions provider"]
+    api -->|"NDJSON events"| browser
+```
+
+The UI sends a new message and a bounded history. The character receives its profile and up to six previous user–character pairs. The critic receives the message and at most four recent messages for context. Its reformulation preserves meaning, language, tone, slang, and intentional language mixing. Critiques are kept beside the source turn and excluded from future model context.
+
+The two agents have separate Python protocols, prompts, and deadlines. They run concurrently via `asyncio`, and FastAPI streams each complete result as a line of JSON. The first branch to finish appears first. Once the reply arrives, the learner can continue while a critique is still pending. If a branch fails, the other can still finish. Retrying a failed reply reuses the original message in the UI.
+
+```mermaid
+sequenceDiagram
+    participant UI as Browser
+    participant API as FastAPI
+    participant Turn as Turn orchestrator
+    participant Character as Character
+    participant Critic as Language critic
+    UI->>API: Send a message and recent history
+    API->>Turn: Validate the turn and look up the profile
+    par Character branch
+        Turn->>Character: Profile, conversation language and history
+        Character-->>Turn: Reply or error
+        Turn-->>UI: Stream reply or character error via API
+    and Optional feedback branch
+        opt Feedback enabled
+            Turn->>Critic: Latest message, short context and explanation language
+            Critic-->>Turn: Validated note and rewrite, or branch status
+            Turn-->>UI: Stream feedback or branch status via API
+        end
+    end
+    Turn-->>UI: Stream done via API
+```
+
+Plain Python is enough for one fan-out with two independent tasks and a single response stream. LangGraph would become relevant if the product needed branching decisions across turns or resumable workflows. The adapter boundary already lets the application swap scripted demo responses for live inference.
+
+| Path | Responsibility |
+| --- | --- |
+| [backend/entre_languages/domain.py](backend/entre_languages/domain.py) | Request and feedback schemas, agent protocols |
+| [backend/entre_languages/orchestration.py](backend/entre_languages/orchestration.py) | Branch ordering, deadlines, cancellation |
+| [backend/entre_languages/adapters/](backend/entre_languages/adapters/) | Scripted demo and OpenAI-compatible inference |
+| [backend/entre_languages/api.py](backend/entre_languages/api.py) | HTTP, persona catalog, stream and concurrency cap |
+| [frontend/src/](frontend/src/) | Discovery, chat, settings, local contacts and conversations |
+
+## Verification
+
+```sh
+uv run --locked pytest
+npm --prefix frontend run build
+```
+
+Backend tests cover the demo HTTP contract, early reply delivery, critique failure, stream cancellation, independent timeouts, the concurrency cap, and the live adapter's payload and schema against a mocked HTTP provider. For live quality, run the examples below with a configured model. The phrasing can vary. Evaluate each result for meaning, register, and whether the explanation names the actual improvement.
+
+| Input | Check |
+| --- | --- |
+| `i have 25 years and i like very much music` | Keep the age and enthusiasm. Use “I'm 25” and a natural position for “really”. |
+| `I'm kinda into old movies, tbh.` | Preserve casual register and accept natural slang. |
+| `fazem dois anos que eu moro aqui e eu gosto muito daqui` | Use singular “faz” for elapsed time and keep the original claim. |
+| `me gusta mucho las películas de terror` | Use “gustan”. With Portuguese selected for explanations, keep the rewrite in Spanish. |
+
+## Deploy
+
+```sh
+docker build -t entre-languages .
+docker run --rm -p 127.0.0.1:8000:8000 entre-languages
+```
+
+The container serves the compiled frontend and API on port 8000. On a container host, expose that port behind HTTPS and use `GET /api/health` for the health check. Demo mode works without secrets. For a live deployment, set provider credentials through the host's environment, put access or rate limits in front of the API, and configure provider spending limits. If using a reverse proxy, preserve streaming for `/api/turns`.
+
+The app has no accounts. Contacts and up to 40 encounters with up to 60 turns each are stored in the browser and can be cleared in Settings. The backend receives at most 6,000 characters of history per turn. In live mode it sends relevant text to the configured provider.
