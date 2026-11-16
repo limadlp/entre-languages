@@ -182,3 +182,44 @@ def test_active_slot_is_released_after_stream_finishes():
             assert (await client.post("/api/turns", json=payload, headers=HEADERS)).status_code == 200
 
     asyncio.run(scenario())
+
+
+def test_demo_reviews_mandarin_and_supports_it_as_explanation_language():
+    async def scenario():
+        app = create_app(Settings())
+        transport = httpx.ASGITransport(app=app)
+        async with app.router.lifespan_context(app), httpx.AsyncClient(
+            transport=transport, base_url="http://test",
+        ) as client:
+            catalog = (await client.get("/api/catalog")).json()
+            samples = catalog["examples"]
+            assert set(samples) == {"en", "pt-BR", "es", "zh-CN"}
+            for entry in samples.values():
+                assert set(entry["notes"]) == set(samples)
+            assert all(persona["bio"]["zh-CN"] for persona in catalog["personas"])
+
+            response = await client.post("/api/turns", json={
+                **PAYLOAD,
+                "conversation_language": "zh-CN",
+                "message": samples["zh-CN"]["message"] + "。",
+            }, headers=HEADERS)
+            events = [json.loads(line) for line in response.text.splitlines()]
+            feedback = next(event["feedback"] for event in events if event["type"] == "feedback")
+            assert feedback == {
+                "note": "Use a palavra de medida “条” para contar calças.",
+                "rewrite": "我昨天去商店买了一条裤子。",
+            }
+            assert any(
+                event["type"] == "reply" and "你最近有什么新爱好吗？" in event["text"]
+                for event in events
+            )
+
+            response = await client.post("/api/turns", json={
+                **PAYLOAD, "feedback_language": "zh-CN",
+            }, headers=HEADERS)
+            events = [json.loads(line) for line in response.text.splitlines()]
+            feedback = next(event["feedback"] for event in events if event["type"] == "feedback")
+            assert feedback["note"] == "说年龄时用“I’m”，并把“really”放在“like”前面。"
+            assert feedback["rewrite"] == "I'm 25, and I really like music."
+
+    asyncio.run(scenario())

@@ -3,7 +3,7 @@ from typing import Annotated, Literal, Protocol
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 
-Language = Literal["en", "pt-BR", "es"]
+Language = Literal["en", "pt-BR", "es", "zh-CN"]
 Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
 
 
