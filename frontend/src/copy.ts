@@ -4,11 +4,22 @@ export const languages: Record<Language, string> = {
   en: 'English',
   'pt-BR': 'Português (Brasil)',
   es: 'Español',
+  'zh-CN': '中文（简体）',
 };
 
 export const languageNames = {
-  en: { en: 'English', 'pt-BR': 'Portuguese', es: 'Spanish' },
-  'pt-BR': { en: 'inglês', 'pt-BR': 'português', es: 'espanhol' },
+  en: {
+    en: 'English',
+    'pt-BR': 'Portuguese',
+    es: 'Spanish',
+    'zh-CN': 'Mandarin Chinese',
+  },
+  'pt-BR': {
+    en: 'inglês',
+    'pt-BR': 'português',
+    es: 'espanhol',
+    'zh-CN': 'mandarim',
+  },
 };
 
 export const copy = {

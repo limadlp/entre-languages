@@ -1,5 +1,5 @@
-export type Language = 'en' | 'pt-BR' | 'es';
-export type InterfaceLanguage = Exclude<Language, 'es'>;
+export type Language = 'en' | 'pt-BR' | 'es' | 'zh-CN';
+export type InterfaceLanguage = 'en' | 'pt-BR';
 
 export interface Persona {
   id: string;

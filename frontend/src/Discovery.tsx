@@ -58,6 +58,7 @@ export function Discovery({
             <span className="orbit-badge orbit-en">hi</span>
             <span className="orbit-badge orbit-pt">oi</span>
             <span className="orbit-badge orbit-es">hola</span>
+            <span className="orbit-badge orbit-zh">你好</span>
             <span className="orbit-center">
               <Languages size={45} strokeWidth={1.6} />
             </span>

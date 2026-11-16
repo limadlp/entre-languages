@@ -338,6 +338,13 @@ svg {
   background: #59452f;
 }
 
+.orbit-zh {
+  bottom: 11px;
+  right: 39px;
+  color: #f3cad9;
+  background: #593a4b;
+}
+
 .primary,
 .secondary {
   display: inline-flex;
@@ -948,6 +955,10 @@ button.tag[aria-pressed='true'] {
   .orbit-es {
     top: 72px;
     right: 26px;
+  }
+  .orbit-zh {
+    bottom: 1px;
+    right: 47px;
   }
   .example {
     padding: 15px;
